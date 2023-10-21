@@ -1,19 +1,16 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-var moleX = new Array(75, 75, 75, 175, 175, 175, 275, 275, 275, 375, 375, 375);
-var moleY = new Array(100, 200, 300, 100, 200, 300, 100, 200, 300, 100, 200, 300);
+var holeX = new Array(75, 75, 75, 175, 175, 175, 275, 275, 275, 375, 375, 375);
+var holeY = new Array(100, 200, 300, 100, 200, 300, 100, 200, 300, 100, 200, 300);
 
-var pos = {};
-var rand = 0;
+var moles = new Array();
 var mousePos = {};
 var isMoleHit = false;
-var acDelta = 0;
-var msPerFrame = 50;
-var isTimeOver = false;
-var timeElapsed = 0;
-var timeLimit = 60;
-var intervalTime = 0;
+var addingMoleTimeElapsed = 0;
+var addingMoleTimeLimit = 60;
+var hiddingHammerTimeElapsed = 0;
+var hiddingHammerTimeLimit = 50;
 var score = 0;
 var times = 0;
 
@@ -45,37 +42,54 @@ $(document).mousemove(function (event) {
   mousePos = getMousePos(event);
 });
 
-var reset = function () {
-  timeElapsed = 0;
-  timeLimit = Math.floor(Math.random() * 60 + 90);
-  intervalTime = 0;
+var addMole = function () {
+  // todo 중복 검사
+  addingMoleTimeElapsed = 0;
+  addingMoleTimeLimit = Math.floor(Math.random() * 120);
   rand = Math.floor(Math.random() * 12);
-  pos.x = moleX[rand];
-  pos.y = moleY[rand];
+  moles.push({
+    x: holeX[rand],
+    y: holeY[rand],
+    dismissTime: Math.floor(Math.random() * 120 + 120),
+  });
+};
+
+var deleteMole = function (moleIndex) {
+  moles.splice(moleIndex, 1);
 };
 
 var render = function () {
   ctx.drawImage(backImage, 0, 0);
-  for (var i = 0; i <= moleX.length; i++) {
-    ctx.drawImage(holeImage, moleX[i], moleY[i]);
+  for (var i = 0; i <= holeX.length; i++) {
+    ctx.drawImage(holeImage, holeX[i], holeY[i]);
   }
 
-  if (isMoleHit || isTimeOver) {
-    ctx.globalAlpha = 0;
+  for (var i = 0; i < moles.length; i++) {
+    ctx.drawImage(moleImage, moles[i].x, moles[i].y);
   }
-  ctx.drawImage(moleImage, moleX[rand], moleY[rand]);
-  ctx.globalAlpha = 1;
 
   if (isMoleHit) {
     ctx.drawImage(hammerImage, 60, 0, 60, 60, mousePos.x - 30, mousePos.y - 30, 60, 60);
-    if (acDelta > msPerFrame) {
-      acDelta = 0;
+    if (hiddingHammerTimeElapsed > hiddingHammerTimeLimit) {
+      hiddingHammerTimeElapsed = 0;
       isMoleHit = false;
     } else {
-      acDelta++;
+      hiddingHammerTimeElapsed++;
     }
   } else {
     ctx.drawImage(hammerImage, 0, 0, 60, 60, mousePos.x - 30, mousePos.y - 30, 60, 60);
+  }
+
+  for (var i = 0; i < moles.length; i++) {
+    moles[i].dismissTime--;
+    if (moles[i].dismissTime <= 0) {
+      deleteMole(i);
+    }
+  }
+
+  addingMoleTimeElapsed++;
+  if (addingMoleTimeElapsed > addingMoleTimeLimit) {
+    addMole();
   }
 
   ctx.fillStyle = "rgb(250, 250, 250)";
@@ -89,35 +103,24 @@ var render = function () {
   ctx.fillStyle = "black";
   ctx.textAlign = "right";
   ctx.fillText("TIME: " + Math.round(times / 100), canvas.width - 10, 10);
-
-  timeElapsed++;
-  if (timeElapsed > timeLimit) {
-    if (!isMoleHit) {
-      isTimeOver = true;
-      if (intervalTime > 50) {
-        isTimeOver = false;
-        reset();
-      } else {
-        intervalTime++;
-      }
-    }
-  }
 };
 
-var isHit = function (x, y) {
-  return x <= pos.x + 60 && x >= pos.x && y <= pos.y + 60 && y >= pos.y;
+var isHit = function (x, y, mole) {
+  return x <= mole.x + 60 && x >= mole.x && y <= mole.y + 60 && y >= mole.y;
 };
 
 $(document).mousedown(function (event) {
   var mouseX = event.clientX - ctx.canvas.offsetLeft;
   var mouseY = event.clientY - ctx.canvas.offsetTop;
 
-  if (isHit(mouseX, mouseY) && isMoleHit === false) {
-    isMoleHit = true;
-    reset();
-    render();
-    hitSound.play();
-    ++score;
+  for (var i = 0; i < moles.length; i++) {
+    if (isHit(mouseX, mouseY, moles[i])) {
+      deleteMole(i);
+      isMoleHit = true;
+      hitSound.play();
+      ++score;
+      render();
+    }
   }
 });
 
@@ -136,7 +139,6 @@ $(".sound").click(function () {
 $("#btnStart").click(function () {
   $("#SplashScreen").hide();
   $("#myCanvas").show();
-  reset();
   main();
   $(".sound").css("display", "block");
   $(".myAudio").trigger("play");
@@ -147,5 +149,4 @@ var main = function () {
   requestAnimationFrame(main);
 };
 
-reset();
 main();
