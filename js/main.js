@@ -43,10 +43,14 @@ $(document).mousemove(function (event) {
 });
 
 var addMole = function () {
-  // todo 중복 검사
   addingMoleTimeElapsed = 0;
   addingMoleTimeLimit = Math.floor(Math.random() * 120);
-  rand = Math.floor(Math.random() * 12);
+
+  do {
+    rand = Math.floor(Math.random() * 12);
+    isExists = existsMole(rand);
+  } while (isExists);
+
   moles.push({
     x: holeX[rand],
     y: holeY[rand],
@@ -56,6 +60,15 @@ var addMole = function () {
 
 var deleteMole = function (moleIndex) {
   moles.splice(moleIndex, 1);
+};
+
+var existsMole = function (rand) {
+  for (var i = 0; i < moles.length; i++) {
+    if (moles[i].x == holeX[rand] && moles[i].y == holeY[rand]) {
+      return true;
+    }
+  }
+  return false;
 };
 
 var render = function () {
