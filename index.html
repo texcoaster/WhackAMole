@@ -3,24 +3,16 @@
 <head>
   <title>Whack A Mole Game</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
   <style>
     body {
-      margin: 10px;
+      margin: 0;
       background: #D0D0D0;
     }
     #myCanvas {
       display: none;
       background: #FFFFFF;
-      border: #909090 1px solid;
-    }
-    #SplashScreen {
-      width: 500px;
-      height: 400px;
-      background-image: url("images/background.png");
-      background-repeat: none;
-      border: #909090 1px solid;
     }
     #mainImage {
       position: absolute;
@@ -76,7 +68,7 @@
   <audio class="myAudio" loop autoplay>
     <source src="sounds/bg.mp3" type="audio/mpeg">
   </audio>
-  <canvas id="myCanvas" width="500" height="400"></canvas>
+  <canvas id="myCanvas"></canvas>
   <script src="js/main.js"></script>
 </body>
 </html>

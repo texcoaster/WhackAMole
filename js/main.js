@@ -1,4 +1,19 @@
+var splashScreen = document.getElementById("SplashScreen");
+splashScreen.style.backgroundImage = 'url("images/background.png")';
+
+let isLandscape = window.innerWidth > window.innerHeight;
+if (isLandscape) {
+  splashScreen.style.height = window.innerHeight + "px";
+  splashScreen.style.width = window.innerHeight * 1.2 + "px";
+} else {
+  splashScreen.style.width = window.innerWidth + "px";
+  splashScreen.style.height = window.innerWidth * 0.8 + "px";
+}
+
 var canvas = document.getElementById("myCanvas");
+canvas.width = window.innerWidth;
+canvas.height = window.innerWidth * 0.8;
+
 var ctx = canvas.getContext("2d");
 
 var holeX = new Array(75, 75, 75, 175, 175, 175, 275, 275, 275, 375, 375, 375);
