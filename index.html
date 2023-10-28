@@ -10,14 +10,19 @@
       margin: 0;
       background: #D0D0D0;
     }
+    #SplashScreen {
+      background-image: url("images/background.png");
+      background-repeat: none;
+    }
     #myCanvas {
       display: none;
       background: #FFFFFF;
     }
     #mainImage {
       position: absolute;
-      top: 145px;
-      left: 250px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 62px;
       height: 61px;
       background-image: url("images/mole.png");
@@ -25,8 +30,9 @@
     }
     #btnStart {
       position: absolute;
-      top: 200px;
-      left: 230px;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 100px;
       height: 41px;
       background-image: url("images/playbutton.png");

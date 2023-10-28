@@ -1,18 +1,31 @@
-var splashScreen = document.getElementById("SplashScreen");
-splashScreen.style.backgroundImage = 'url("images/background.png")';
+function setSizePosition(el) {
+  let isLandscape = window.innerWidth > window.innerHeight;
 
-let isLandscape = window.innerWidth > window.innerHeight;
-if (isLandscape) {
-  splashScreen.style.height = window.innerHeight + "px";
-  splashScreen.style.width = window.innerHeight * 1.2 + "px";
-} else {
-  splashScreen.style.width = window.innerWidth + "px";
-  splashScreen.style.height = window.innerWidth * 0.8 + "px";
+  let width;
+  let height;
+
+  if (isLandscape) {
+    height = window.innerHeight;
+    width = window.innerHeight * 1.2;
+    el.style.height = height + "px";
+    el.style.width = width + "px";
+  } else {
+    width = window.innerWidth;
+    height = window.innerWidth * 0.8;
+    el.style.width = width + "px";
+    el.style.height = height + "px";
+  }
+
+  el.style.position = "absolute";
+  el.style.top = (window.innerHeight - height) / 2 + "px";
+  el.style.left = (window.innerWidth - width) / 2 + "px";
 }
 
+var splashScreen = document.getElementById("SplashScreen");
+setSizePosition(splashScreen);
+
 var canvas = document.getElementById("myCanvas");
-canvas.width = window.innerWidth;
-canvas.height = window.innerWidth * 0.8;
+setSizePosition(canvas);
 
 var ctx = canvas.getContext("2d");
 
@@ -87,7 +100,8 @@ var existsMole = function (rand) {
 };
 
 var render = function () {
-  ctx.drawImage(backImage, 0, 0);
+  ctx.drawImage(backImage, 0, 0, canvas.width, canvas.height);
+
   for (var i = 0; i <= holeX.length; i++) {
     ctx.drawImage(holeImage, holeX[i], holeY[i]);
   }
