@@ -1,31 +1,15 @@
-function setSizePosition(el) {
-  let isLandscape = window.innerWidth > window.innerHeight;
-
-  let width;
-  let height;
-
-  if (isLandscape) {
-    height = window.innerHeight;
-    width = window.innerHeight * 1.2;
-    el.style.height = height + "px";
-    el.style.width = width + "px";
-  } else {
-    width = window.innerWidth;
-    height = window.innerWidth * 0.8;
-    el.style.width = width + "px";
-    el.style.height = height + "px";
-  }
-
-  el.style.position = "absolute";
-  el.style.top = (window.innerHeight - height) / 2 + "px";
-  el.style.left = (window.innerWidth - width) / 2 + "px";
-}
+let gameScreenWidth;
+let gameScreenHeight;
+let isLandscape;
+setGameScreenSize();
 
 var splashScreen = document.getElementById("SplashScreen");
 setSizePosition(splashScreen);
 
 var canvas = document.getElementById("myCanvas");
 setSizePosition(canvas);
+canvas.width = gameScreenWidth;
+canvas.height = gameScreenHeight;
 
 var ctx = canvas.getContext("2d");
 
@@ -42,6 +26,8 @@ var hiddingHammerTimeLimit = 50;
 var score = 0;
 var times = 0;
 
+bool_backImage = false;
+
 var backImage = new Image();
 backImage.src = "images/background.png";
 
@@ -55,6 +41,36 @@ var hammerImage = new Image();
 hammerImage.src = "images/hammer.png";
 
 var hitSound = new Audio("sounds/hit.mp3");
+
+backImage.onload = function () {
+  bool_backImage = true;
+};
+
+function setGameScreenSize() {
+  isLandscape = window.innerWidth > window.innerHeight;
+
+  if (isLandscape) {
+    gameScreenHeight = window.innerHeight;
+    gameScreenWidth = window.innerHeight * 1.2;
+  } else {
+    gameScreenWidth = window.innerWidth;
+    gameScreenHeight = window.innerWidth * 0.8;
+  }
+}
+
+function setSizePosition(el) {
+  if (isLandscape) {
+    el.style.height = gameScreenHeight + "px";
+    el.style.width = gameScreenWidth + "px";
+  } else {
+    el.style.width = gameScreenWidth + "px";
+    el.style.height = gameScreenHeight + "px";
+  }
+
+  el.style.position = "absolute";
+  el.style.top = (window.innerHeight - gameScreenHeight) / 2 + "px";
+  el.style.left = (window.innerWidth - gameScreenWidth) / 2 + "px";
+}
 
 function getMousePos(event) {
   var mouseX = event.clientX - ctx.canvas.offsetLeft;
@@ -100,7 +116,13 @@ var existsMole = function (rand) {
 };
 
 var render = function () {
-  ctx.drawImage(backImage, 0, 0, canvas.width, canvas.height);
+  if (bool_backImage) {
+    for (let i = 0; i < gameScreenWidth; i += backImage.width) {
+      for (let j = 0; j < gameScreenHeight; j += backImage.height) {
+        ctx.drawImage(backImage, i, j);
+      }
+    }
+  }
 
   for (var i = 0; i <= holeX.length; i++) {
     ctx.drawImage(holeImage, holeX[i], holeY[i]);
